@@ -17,23 +17,25 @@ def web_extractor_agent():
 #writer chain 
 
 writer_prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are an expert research writer. Write clear, structured and insightful reports."),
-    ("human", """Write a detailed research report on the topic below.
+    ("system", "You are an expert research writer."),
+    ("human", """Write a structured, factual report.
 
 Topic: {topic}
+Research: {research}
 
-Research Gathered:
-{research}
-
-Structure the report as:
+Format:
 - Introduction
-- Key Findings (minimum 3 well-explained points)
+- Key Findings (min 3, well explained)
 - Conclusion
-- Sources (list all URLs found in the research)
+- Sources (all URLs)
 
-Be detailed, factual and professional."""),
+Rules:
+- Do NOT ask questions or suggest anything
+- Do NOT include lines like "Would you like..." or "Let me know..."
+- End strictly after the Sources section
+
+Be clear, professional, and complete."""),
 ])
-
 writer_chain = writer_prompt | llm | StrOutputParser()
 
 #critic_chain 
