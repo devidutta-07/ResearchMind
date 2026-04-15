@@ -1,0 +1,7 @@
+bs4
+dotenv
+langchain
+langchain-mistralai
+langchain-tavily
+python-docx
+reportlab
