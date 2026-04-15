@@ -23,7 +23,7 @@ def web_search(topic: str) -> str:
     
     return "\n----\n".join(formatted_results)
 
-print(web_search.invoke("news on Iran - America War"))
+# print(web_search.invoke("news on Iran - America War"))
 
 @tool
 def web_extractor(links: str) -> str:
@@ -48,7 +48,7 @@ def web_extractor(links: str) -> str:
 
             text = soup.get_text(separator=" ", strip=True)
 
-            all_content.append(f"URL: {url}\n{text[:2000]}\n")  # limit size
+            all_content.append(f"URL: {url}\n{text[:2000]}\n")  
 
         except Exception as e:
             all_content.append(f"URL: {url}\nError: {str(e)}\n")
