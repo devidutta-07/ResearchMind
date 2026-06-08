@@ -1,13 +1,17 @@
 from langchain.agents import create_agent
 from langchain_mistralai import ChatMistralAI
+from langchain_huggingface import HuggingFaceEndpoint,ChatHuggingFace
 from tool import web_search, web_extractor
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 load_dotenv()
 
-llm=ChatMistralAI(model_name="mistral-small-latest",temperature=0)
-
+llm=ChatMistralAI(model="mistral-small-latest",temperature=0)
+model=HuggingFaceEndpoint(
+    repo_id="deepseek-ai/DeepSeek-R1",
+)
+critic_llm=ChatHuggingFace(llm=model,verbose=True)
 def web_search_agent():
     return create_agent(llm,tools=[web_search])
 
@@ -63,4 +67,4 @@ One line verdict:
 ..."""),
 ])
 
-critic_chain = critic_prompt | llm | StrOutputParser()
+critic_chain = critic_prompt | critic_llm | StrOutputParser()
