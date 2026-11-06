@@ -1,6 +1,5 @@
 
 import {
-  createContext,
   useEffect,
   useState,
   type ReactNode,
@@ -9,19 +8,7 @@ import {
 import type { User } from "../types";
 import * as authService from "../services/authService";
 import { supabase } from "../services/supabase";
-
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  loginUser: (email: string, password: string) => Promise<User>;
-  signupUser: (name: string, email: string, password: string) => Promise<User>;
-  logoutUser: () => Promise<void>;
-  googleLogin: () => Promise<void>;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
+import { AuthContext } from "./authContext";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
