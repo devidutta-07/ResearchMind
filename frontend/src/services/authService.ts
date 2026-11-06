@@ -99,3 +99,17 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
   return await getUserProfile(session.user.id);
 };
+
+
+export const signInWithGoogle = async (): Promise<void> => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/dashboard`,
+    },
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};

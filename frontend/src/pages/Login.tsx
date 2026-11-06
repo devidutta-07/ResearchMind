@@ -32,7 +32,7 @@ const GoogleIcon = () => (
 );
 
 const Login = () => {
-  const { loginUser } = useAuth();
+  const { loginUser, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -80,9 +80,15 @@ const handleLogin = async (e: React.FormEvent) => {
           <button
             className="social-btn"
             type="button"
-            onClick={() =>
-              alert("Google sign-in will be enabled with Supabase.")
-            }
+           onClick={async () => {
+  try {
+    await googleLogin();
+  } catch (err) {
+    setError(
+      err instanceof Error ? err.message : "Google sign-in failed"
+    );
+  }
+}}
           >
             <GoogleIcon />
             Continue with Google
