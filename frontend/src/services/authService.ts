@@ -1,65 +1,101 @@
+
+import { supabase } from "./supabase";
 import type { User } from "../types";
 
-const USERS_KEY = "researchmind_users";
-const SESSION_KEY = "researchmind_session";
+// Fetch user profile from Supabase
+export const getUserProfile = async (userId: string): Promise<User> => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, name, email, role")
+    .eq("id", userId)
+    .single();
 
-const getUsers = (): User[] => {
-  return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+  if (error) {
+    throw new Error("Unable to fetch user profile: " + error.message);
+  }
+
+  return {
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    role: data.role as User["role"],
+  };
 };
 
-export const signup = (
+// Sign up
+export const signup = async (
   name: string,
   email: string,
   password: string
-): User => {
-  const users = getUsers();
-
-  if (users.some((u) => u.email === email)) {
-    throw new Error("Email already registered");
-  }
-
-  const newUser: User = {
-    id: crypto.randomUUID(),
-    name,
+): Promise<User> => {
+  const { data, error } = await supabase.auth.signUp({
     email,
-    role: "user",
-  };
+    password,
+    options: {
+      data: {
+        name,
+      },
+    },
+  });
 
-  users.push({ ...newUser, password } as User);
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-
-  localStorage.setItem(SESSION_KEY, JSON.stringify(newUser));
-
-  return newUser;
-};
-
-export const login = (email: string, password: string): User => {
-  const users = getUsers() as (User & { password: string })[];
-
-  const user = users.find(
-    (u) => u.email === email && u.password === password
-  );
-
-  if (!user) {
-    throw new Error("Invalid email or password");
+  if (error) {
+    throw new Error(error.message);
   }
 
-    const safeUser = {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    };
+  if (!data.user) {
+    throw new Error("Signup failed. Please try again.");
+  }
 
-  localStorage.setItem(SESSION_KEY, JSON.stringify(safeUser));
+  if (!data.session) {
+    throw new Error("Please verify your email before signing in.");
+  }
 
-  return safeUser;
+  return await getUserProfile(data.user.id);
 };
 
-export const logout = () => {
-  localStorage.removeItem(SESSION_KEY);
+// Login
+export const login = async (
+  email: string,
+  password: string
+): Promise<User> => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data.user) {
+    throw new Error("Login failed. Please try again.");
+  }
+
+  return await getUserProfile(data.user.id);
 };
 
-export const getCurrentUser = (): User | null => {
-  return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+// Logout
+export const logout = async (): Promise<void> => {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+// Get currently logged-in user
+export const getCurrentUser = async (): Promise<User | null> => {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const session = data.session;
+
+  if (!session?.user) {
+    return null;
+  }
+
+  return await getUserProfile(session.user.id);
 };
