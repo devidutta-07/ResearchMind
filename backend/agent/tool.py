@@ -2,7 +2,6 @@ from langchain.tools import tool
 from langchain_tavily import TavilySearch
 from bs4 import BeautifulSoup
 import requests
-from rich import print
 from dotenv import load_dotenv
 load_dotenv()
 tavily = TavilySearch(max_results=3)
@@ -12,7 +11,7 @@ def web_search(topic: str) -> str:
     """Searches the web and returns titles, URLs, and snifits"""
     
     results = tavily.invoke(topic)
-    print(results)
+    # print(results)
     formatted_results = []
     
     for r in results['results']:
