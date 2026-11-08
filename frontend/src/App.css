@@ -93,15 +93,22 @@ button {
   color: #f5f5f5;
 }
 
+/* Icy Blue LightResearch Brand Highlight */
 .brand-highlight {
   font-weight: 700;
-  background: linear-gradient(100deg, #c4b5fd 0%, #818cf8 55%, #60a5fa 100%);
+  background: linear-gradient(
+    100deg,
+    #e0f7ff 0%,
+    #a5e8ff 25%,
+    #55cfff 50%,
+    #8bdcff 75%,
+    #e0f7ff 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
-
 /* Container */
 
 .auth-container {
