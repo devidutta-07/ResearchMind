@@ -9,6 +9,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import usePageTitle from "../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowUp,
@@ -132,10 +133,10 @@ function useDismiss(
     const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key === "Escape") close();
     };
-    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("pointerdown", onPointer);
     document.addEventListener("keydown", onKey);
     return () => {
-      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("pointerdown", onPointer);
       document.removeEventListener("keydown", onKey);
     };
   }, [ref, open, close]);
@@ -536,6 +537,7 @@ const STYLES = `
 
 const Dashboard = () => {
   const { user, logoutUser } = useAuth();
+  usePageTitle(`LightResearch | ${user?.name?.trim() || "User"}`);
   const navigate = useNavigate();
 
   // The shape of `User` lives in ../types; read optional fields defensively.
@@ -736,8 +738,10 @@ const Dashboard = () => {
       {/* ------------------------------ Navbar ------------------------------ */}
       <header className="rm-nav">
         <div className="rm-brand">
-          <img src="/lightresearch-logo.png" alt="ResearchMind logo" />
-          <span>ResearchMind</span>
+          <img src="/lightresearch-logo.png" alt="LightResearch logo" />
+          <span className="rm-brand-name">
+            Light<span className="brand-highlight">Research</span>
+          </span>
         </div>
 
         <div className="rm-nav-right">
@@ -846,7 +850,7 @@ const Dashboard = () => {
               <h1>What would you like to research today?</h1>
               <p>
                 Explore ideas, discover insights, and generate structured research reports with
-                ResearchMind.
+                LightResearch.
               </p>
               {composer}
             </div>
@@ -863,7 +867,7 @@ const Dashboard = () => {
                       <div key={m.id} className="rm-msg rm-msg-ai">
                         <div className="rm-label">
                           <img src="/lightresearch-logo.png" alt="" />
-                          ResearchMind
+                          LightResearch
                         </div>
                         <div className="rm-bubble">{m.content}</div>
                       </div>

@@ -8,13 +8,14 @@ import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/AdminDashboard";
 
 import ProtectedRoute from "../components/ProtectedRoute";
+import LoadingScreen from "../components/LoadingScreen";
 import { useAuth } from "../hooks/useAuth";
 
 const AppRoutes = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
 
   return (

@@ -1,4 +1,4 @@
-
+import LoadingScreen from "../components/LoadingScreen";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
@@ -9,10 +9,9 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ adminOnly = false }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
+if (loading) {
+  return <LoadingScreen />;
+}
   if (!user) {
     return <Navigate to="/login" replace />;
   }

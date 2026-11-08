@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import type { CSSProperties, MouseEvent as ReactMouseEvent } from "react";
 import { Link } from "react-router-dom";
+import usePageTitle from "../hooks/usePageTitle";
 import {
   ArrowRight,
   BookOpen,
@@ -719,6 +720,7 @@ html { scroll-behavior: smooth; }
 `;
 
 export default function LandingPage() {
+  usePageTitle("LightResearch - Meet your intelligent multi-agent research assistant");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);

@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import usePageTitle from "../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import {
   Users,
@@ -14,6 +15,7 @@ import type { AdminUser } from "../types";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
+  usePageTitle("Admin - LightResearch");
   const { user, logoutUser } = useAuth();
   const navigate = useNavigate();
 

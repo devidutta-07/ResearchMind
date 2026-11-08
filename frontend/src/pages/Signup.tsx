@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import usePageTitle from "../hooks/usePageTitle";
 import { useAuth } from "../hooks/useAuth";
 import {
   ArrowRight,
@@ -33,6 +34,7 @@ const GoogleIcon = () => (
 );
 
 const Signup = () => {
+  usePageTitle("LightResearch - Signup");
   const { signupUser, googleLogin } = useAuth();
   const navigate = useNavigate();
 
