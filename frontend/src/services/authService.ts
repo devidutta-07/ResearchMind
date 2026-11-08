@@ -1,6 +1,6 @@
 
 import { supabase } from "./supabase";
-import type { User } from "../types";
+import type { User, AdminUser } from "../types";
 
 // Fetch user profile from Supabase
 export const getUserProfile = async (userId: string): Promise<User> => {
@@ -20,6 +20,26 @@ export const getUserProfile = async (userId: string): Promise<User> => {
     email: data.email,
     role: data.role as User["role"],
   };
+};
+
+// Fetch all user profiles (Admin only)
+export const getAllUsers = async (): Promise<AdminUser[]> => {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, name, email, role, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error("Unable to fetch users: " + error.message);
+  }
+
+  return (data ?? []).map((profile) => ({
+    id: profile.id,
+    name: profile.name,
+    email: profile.email,
+    role: profile.role as User["role"],
+    created_at: profile.created_at,
+  }));
 };
 
 // Sign up

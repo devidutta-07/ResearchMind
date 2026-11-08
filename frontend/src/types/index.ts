@@ -6,3 +6,7 @@ export interface User {
   email: string;
   role: UserRole;
 }
+
+export interface AdminUser extends User {
+  created_at: string;
+}
