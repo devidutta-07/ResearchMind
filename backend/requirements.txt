@@ -1,0 +1,15 @@
+beautifulsoup4
+python-dotenv
+requests
+langchain
+langchain-google-genai
+langchain-huggingface
+langchain-mistralai
+langchain-openai
+langchain-openrouter
+langchain-tavily
+python-docx
+reportlab
+rich
+fastapi
+uvicorn[standard]
