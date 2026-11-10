@@ -12,7 +12,6 @@ from core.export import md_to_pdf_bytes, md_to_docx_bytes
 
 app = FastAPI(title="ResearchMind API")
 
-# update the vercel URL in CORS_ORIGINS (comma-separated) after frontend deploy, or set it in Render env
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,https://your-frontend.vercel.app").split(",")
 app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in cors_origins],
                    allow_methods=["*"], allow_headers=["*"])
