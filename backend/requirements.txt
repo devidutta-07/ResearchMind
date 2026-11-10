@@ -11,4 +11,5 @@ langchain-tavily
 python-docx
 reportlab
 rich
-streamlit
+fastapi
+uvicorn[standard]
