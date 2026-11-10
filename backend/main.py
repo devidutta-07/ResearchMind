@@ -12,7 +12,7 @@ from core.export import md_to_pdf_bytes, md_to_docx_bytes
 
 app = FastAPI(title="ResearchMind API")
 
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,https://your-frontend.vercel.app").split(",")
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174,https://your-frontend.vercel.app").split(",")
 app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in cors_origins],
                    allow_methods=["*"], allow_headers=["*"])
 
@@ -64,6 +64,9 @@ def health():
 @app.post("/api/research")
 def research(req: ResearchRequest):
     topic = req.topic.strip()
+    missing = [k for k in ("TAVILY_API_KEY", "OPENROUTER_API_KEY", "GROK_API_KEY") if not os.getenv(k)]
+    if missing:
+        raise HTTPException(status_code=503, detail=f"Backend not configured — missing env vars: {', '.join(missing)}")
     try:
         sr = web_search_agent().invoke(
             {"messages": [("user", f"Find recent, reliable and detailed information about: {topic}")]})
@@ -96,12 +99,20 @@ def export_md(req: ExportRequest):
 
 @app.post("/api/export/pdf")
 def export_pdf(req: ExportRequest):
-    return Response(md_to_pdf_bytes(req.markdown), media_type="application/pdf",
+    try:
+        data = md_to_pdf_bytes(req.markdown)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PDF generation failed: {e}")
+    return Response(data, media_type="application/pdf",
                     headers=_attachment("report.pdf"))
 
 
 @app.post("/api/export/docx")
 def export_docx(req: ExportRequest):
-    return Response(md_to_docx_bytes(req.markdown),
+    try:
+        data = md_to_docx_bytes(req.markdown)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"DOCX generation failed: {e}")
+    return Response(data,
                     media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     headers=_attachment("report.docx"))

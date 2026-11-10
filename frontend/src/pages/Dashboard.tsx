@@ -20,18 +20,8 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { runResearch } from "../services/researchService";
 
-/* ==========================================================================
-   Research backend adapter
-   --------------------------------------------------------------------------
-   The multi-agent pipeline is not wired into this component yet.
-   To connect it, make `getResearchRunner` return a function that:
-     - calls your existing research workflow with the query,
-     - calls `onAgentUpdate(agent, status)` ONLY when the backend reports it,
-     - resolves with the finished report ({ title, markdown }).
-   While it returns null, the UI shows a clear "not connected" notice and
-   never simulates agent progress.
-   ========================================================================== */
 
 type AgentId = "search" | "reader" | "writer" | "critic";
 type AgentStatus = "pending" | "active" | "done" | "error";
@@ -51,7 +41,16 @@ type ResearchRunner = (
 ) => Promise<ResearchReport>;
 
 const getResearchRunner = (): ResearchRunner | null => {
-  return null; // <- connect the existing research workflow here
+  return async (query, { onAgentUpdate }) => {
+    const data = await runResearch(query);
+    (["search", "reader", "writer", "critic"] as AgentId[]).forEach((agent) =>
+      onAgentUpdate(agent, "done")
+    );
+    const markdown = data.critique
+      ? `${data.report}\n\n## Critic Feedback\n\n${data.critique}`
+      : data.report;
+    return { title: `Research Report: ${data.topic}`, markdown };
+  };
 };
 
 /* ==========================================================================
