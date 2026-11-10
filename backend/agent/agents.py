@@ -1,22 +1,38 @@
+import os
 from langchain.agents import create_agent
-from langchain_mistralai import ChatMistralAI
-from langchain_huggingface import HuggingFaceEndpoint,ChatHuggingFace
-from tool import web_search, web_extractor
+from agent.tool import web_search, web_extractor
+from langchain_openai import ChatOpenAI
+from langchain_openrouter import ChatOpenRouter
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 load_dotenv()
 
-llm=ChatMistralAI(model="mistral-small-latest",temperature=0)
-model=HuggingFaceEndpoint(
-    repo_id="deepseek-ai/DeepSeek-R1",
+
+grok_llm = ChatOpenAI(
+    model="openai/gpt-oss-20b",
+    temperature=0,
+    api_key=os.getenv("GROK_API_KEY"),
+    base_url="https://api.groq.com/openai/v1",
 )
-critic_llm=ChatHuggingFace(llm=model,verbose=True)
+
+writer_llm = ChatOpenRouter(
+    model="recursive/flint-v1.0:free",
+    temperature=0,
+)
+
+critic_llm = ChatOpenRouter(
+    model="nvidia/nemotron-3.5-lightning:free",
+    temperature=0,
+)
+SEARCH_AGENT_PROMPT = "Call web_search exactly once with the user's topic. Then return the tool result verbatim as your final answer — no rewording, no extra commentary, no follow-up calls."
+EXTRACTOR_AGENT_PROMPT = "Call web_extractor exactly once with ALL URLs extracted from the user input (up to 3). Then return the tool result verbatim as your final answer — no rewording, no extra commentary, no follow-up calls."
+
 def web_search_agent():
-    return create_agent(llm,tools=[web_search])
+    return create_agent(grok_llm,tools=[web_search], system_prompt=SEARCH_AGENT_PROMPT)
 
 def web_extractor_agent():
-    return create_agent(llm,tools=[web_extractor])
+    return create_agent(grok_llm,tools=[web_extractor], system_prompt=EXTRACTOR_AGENT_PROMPT)
 
 #writer chain 
 writer_prompt = ChatPromptTemplate.from_messages([
@@ -93,7 +109,7 @@ Requirements:
 """
     )
 ])
-writer_chain = writer_prompt | llm | StrOutputParser()
+writer_chain = writer_prompt | writer_llm | StrOutputParser()
 
 #critic_chain 
 

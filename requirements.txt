@@ -1,9 +1,0 @@
-bs4
-dotenv
-langchain
-langchain-mistralai
-langchain_huggingface
-langchain-tavily
-python-docx
-reportlab
-streamlit
